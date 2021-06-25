@@ -7,6 +7,10 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import pl.saxatachi.kuchcik.model.*;
 import pl.saxatachi.kuchcik.repository.ReceiptRepository;
@@ -29,6 +33,7 @@ public class Kuchcikapiv2 {
     private final TagService tagService;
     private final RestaurantService restaurantService;
     private final CityService cityService;
+    private final UserService userService;
 
     @GetMapping("/")
     public String home() {
@@ -36,7 +41,16 @@ public class Kuchcikapiv2 {
     }
     @GetMapping("/testposts")
     public List<Post> testPosts(){
+
         return postService.testPosts();
+    }
+    @GetMapping("/myposts")
+    public List<Post> displaymyPosts(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails)principal).getUsername();
+        return postService.myPosts(username);
+
+
     }
     @GetMapping("/posts")
     public ResponseEntity<List<Post>> getPosts(@RequestParam(required = false) Integer page, Sort.Direction sort){
@@ -87,6 +101,10 @@ public class Kuchcikapiv2 {
     public Comment postComment(@RequestBody Comment comment){
         return commentService.addComment(comment);
     }
+    @DeleteMapping("/comments/{id}")
+    public void deleteComment(@PathVariable long id){commentService.deleteComment(id);}
+    @PutMapping("/comments/{id}")
+    public void editComment(@RequestBody Comment comment){commentService.editComment(comment);}
     @GetMapping("/authorcomments/{id}")
     public List<Comment> getAuthorComments(@PathVariable long id){
         return commentService.getAuthorComments(id);
@@ -108,6 +126,10 @@ public class Kuchcikapiv2 {
     @PostMapping("/tags")
     public Tag postTag(@RequestBody Tag tag){
         return tagService.addTag(tag);
+    }
+    @DeleteMapping("/tags/{id}")
+    public void deleteTag(@PathVariable long id){
+        tagService.deleteTag(id);
     }
     @GetMapping("/restaurant")
     public List<Restaurant> getRestaurant(){

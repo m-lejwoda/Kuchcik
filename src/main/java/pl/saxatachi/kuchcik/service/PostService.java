@@ -7,11 +7,14 @@ import org.springframework.stereotype.Service;
 import pl.saxatachi.kuchcik.model.Ingredient;
 import pl.saxatachi.kuchcik.model.Post;
 import pl.saxatachi.kuchcik.model.Tag;
+import pl.saxatachi.kuchcik.model.User;
 import pl.saxatachi.kuchcik.repository.PostRepository;
 import pl.saxatachi.kuchcik.repository.TagRepository;
+import pl.saxatachi.kuchcik.repository.UserRepository;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +25,7 @@ public class PostService {
     private static final int PAGE_SIZE = 20;
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
+    private final UserRepository userRepository;
     public List<Post> getPosts(int page, Sort.Direction sort) {
         return postRepository.findAllPosts(
                 PageRequest.of(page, PAGE_SIZE,
@@ -47,6 +51,8 @@ public class PostService {
                 temp_tags.add(tag_list.get(0));
             }
         }
+        LocalDateTime now = LocalDateTime.now();
+        post.setCreated(now);
         post.setTag(temp_tags);
         return postRepository.save(post);
     }
@@ -69,5 +75,12 @@ public class PostService {
 
     public void deletePost(long id) {
         postRepository.deleteById(id);
+    }
+    public List<Post> myPosts(String email){
+        User user = userRepository.findUserByEmail(email);
+        Long user_id = user.getId();
+        System.out.println(user_id);
+        return postRepository.findAllByUserId(user_id);
+
     }
 }

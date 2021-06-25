@@ -7,12 +7,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import pl.saxatachi.kuchcik.model.Post;
 import pl.saxatachi.kuchcik.model.User;
 import pl.saxatachi.kuchcik.registration.token.ConfirmationToken;
 import pl.saxatachi.kuchcik.registration.token.ConfirmationTokenService;
 import pl.saxatachi.kuchcik.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -51,4 +53,5 @@ public class UserService implements UserDetailsService {
     public int enableAppUser(String email) {
         return userRepository.enableUser(email);
     }
+
 }

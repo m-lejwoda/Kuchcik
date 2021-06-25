@@ -11,7 +11,7 @@ import java.util.Set;
 public class Ingredient {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Setter(value = AccessLevel.NONE)
+//    @Setter(value = AccessLevel.NONE)
     @Column(name="id")
     private Long id;
     @Column(name="name")

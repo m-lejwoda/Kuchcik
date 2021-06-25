@@ -5,6 +5,7 @@ import org.springframework.hateoas.RepresentationModel;
 import springfox.documentation.service.Representation;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 @Getter
 @Setter
@@ -23,6 +24,8 @@ public class Post extends RepresentationModel<Post> {
     private String author;
     @Column(name="created_date")
     private String created_date;
+    @Column(name="created")
+    private LocalDateTime created;
     @Column(name="commentId")
     private Long commentId;
     @Column(name="userId")
