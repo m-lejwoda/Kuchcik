@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import pl.saxatachi.kuchcik.model.Ingredient;
 import pl.saxatachi.kuchcik.model.Post;
 import pl.saxatachi.kuchcik.model.Tag;
 import pl.saxatachi.kuchcik.repository.PostRepository;
@@ -11,6 +12,7 @@ import pl.saxatachi.kuchcik.repository.TagRepository;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +36,18 @@ public class PostService {
         return postRepository.findById(id).orElseThrow();
     }
     public Post addPost(Post post) {
+        List<Tag> temp_tags = new ArrayList<Tag>();
+        for(Tag tag: post.getTag()){
+            List<Tag> tag_list = tagRepository.findTagByName(tag.getName());
+            if(tag_list.isEmpty()){
+                Tag create_tag = tagRepository.save(tag);
+                temp_tags.add(create_tag);
+            }
+            else{
+                temp_tags.add(tag_list.get(0));
+            }
+        }
+        post.setTag(temp_tags);
         return postRepository.save(post);
     }
 //    public Post addTagtoPost(long id){

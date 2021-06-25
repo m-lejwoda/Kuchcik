@@ -38,18 +38,11 @@ public class ReceiptService {
                 }else{
                     list_ingredients.add(ingredientRepository.findIngredientbyName(ingredient.getName()).get(0));
                 }
-//                element.setReceiptId(temp_receipt.getId());
-//
-//                element.setIngredient(list_ingredients);
-//                ElementofReceipt el_receipt = elementofReceiptRepository.save(element);
-//                temp_elements_of_receipt.add(element);
             }
             element.setReceiptId(temp_receipt.getId());
             element.setIngredient(list_ingredients);
             elementofReceiptRepository.save(element);
             temp_elements_of_receipt.add(element);
-//            temp_receipt.setElementofreceipts(temp_elements_of_receipt);
-//            ElementofReceipt el_receipt = elementofReceiptRepository.save(element);
         }
         System.out.println(temp_elements_of_receipt);
         temp_receipt.setElementofreceipts(temp_elements_of_receipt);

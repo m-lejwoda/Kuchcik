@@ -1,13 +1,16 @@
 package pl.saxatachi.kuchcik.model;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
+import springfox.documentation.service.Representation;
+
 import javax.persistence.*;
 import java.util.List;
 @Getter
 @Setter
 @Entity
 @Table(name="post")
-public class Post {
+public class Post extends RepresentationModel<Post> {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="id")
@@ -22,6 +25,8 @@ public class Post {
     private String created_date;
     @Column(name="commentId")
     private Long commentId;
+    @Column(name="userId")
+    private Long userId;
     @OneToMany
     @JoinColumn(name="postId",updatable = false,insertable = false)
     private List<Comment> comment;

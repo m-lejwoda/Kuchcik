@@ -80,6 +80,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2-console/**").permitAll()
 //                .antMatchers("/kuchcik/v2/**").permitAll()
 //                .antMatchers("/login").permitAll()
+                .antMatchers("/registration/**").permitAll()
+                .antMatchers("/registration").permitAll()
                 .antMatchers("/api/v*/registration/**").permitAll()
                 .anyRequest().authenticated().and()
 //                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

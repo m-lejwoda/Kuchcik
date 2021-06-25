@@ -16,9 +16,10 @@ public class TagService {
         return tagRepository.findAll();
     }
     public Tag addTag(Tag tag){
-        return tagRepository.save(tag);
+        if(tagRepository.findTagByName(tag.getName()).isEmpty()){
+            return tagRepository.save(tag);
+        }else{
+            return tagRepository.findTagByName(tag.getName()).get(0);
+        }
     }
-
-
-
 }
