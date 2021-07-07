@@ -32,6 +32,10 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE
                     ,generator = "user_sequence")
+
+//    @Id
+//    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name="id")
     private Long id;
     private String firstName;
     private String lastName;
@@ -41,12 +45,9 @@ public class User implements UserDetails {
     private AppUserRole appUserRole;
     private Boolean locked = false;
     private Boolean enabled = false;
-    @OneToOne
-    @JoinColumn(name="address_id")
-    private Address address;
     @OneToMany
-    @JoinColumn(name="userId",updatable = false,insertable = false)
-    private List<Comment> comment;
+    @JoinColumn(name = "userId")
+    private List<Address> address;
 
     public User(String firstName, String lastName, String email, String password, AppUserRole appUserRole) {
         this.firstName = firstName;

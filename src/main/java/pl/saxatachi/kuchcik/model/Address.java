@@ -6,7 +6,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +25,6 @@ public class Address {
     private Integer phone;
     @Column(name="loaded")
     private Boolean loaded;
+    @Column(name="userId")
+    private Long userId;
 }

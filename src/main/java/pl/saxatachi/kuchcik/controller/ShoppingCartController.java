@@ -63,11 +63,6 @@ public class ShoppingCartController {
         return itemsincart;
     }
 
-//    @GetMapping("/shoppingCart/addProduct/{productId}")
-//    public ModelAndView addProductToCart(@PathVariable("productId") Long productId) throws IOException {
-//        productService.findById(productId).ifPresent(shoppingCartService::addProduct);
-//        return shoppingCart();
-//    }
     @GetMapping("/allorders")
     public List<Order> allOrders(){
         return orderService.allorders();
@@ -108,7 +103,7 @@ public class ShoppingCartController {
         if(userService.getUser(username).getAddress() != null){
             System.out.println("user service");
             System.out.println(userService.getUser(username).getAddress() );
-            addresses.add(userService.getUser(username).getAddress());
+            addresses.add(userService.getUser(username).getAddress().get(0));
         }else{
             addressService.saveAddress(address);
             addresses.add(address);
@@ -138,25 +133,21 @@ public class ShoppingCartController {
         return userService.getUser(username);
     }
     @PostMapping("/addaddress")
-    public Address addAddresstoUser(Address address){
+    public List<Address> addAddresstoUser(@RequestBody Address address){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails)principal).getUsername();
-        userService.getUser(username).setAddress(address);
-        return address;
-    }
-//    @GetMapping("/shoppingCart/removeProduct/{productId}")
-//    public ModelAndView removeProductFromCart(@PathVariable("productId") Long productId) throws IOException {
-//        productService.findById(productId).ifPresent(shoppingCartService::removeProduct);
-//        return shoppingCart();
-//    }
+        address.setUserId(userService.getUser(username).getId());
+        addressService.saveAddress(address);
+        List <Address> adddress = userService.getUser(username).getAddress();
+        System.out.println(userService.getUser(username));
+        System.out.println(userService.getUser(username).getUsername());
+        System.out.println(adddress);
+        adddress.add(address);
+        userService.getUser(username).setAddress(adddress);
 
-//    @GetMapping("/shoppingCart/checkout")
-//    public ModelAndView checkout() throws IOException {
-//        try {
-//            shoppingCartService.checkout();
-//        } catch (NotEnoughProductsInStockException e) {
-//            return shoppingCart().addObject("outOfStockMessage", e.getMessage());
-//        }
-//        return shoppingCart();
-//    }
+//        System.out.println(userService.getUser(username).getUsername());
+//        System.out.println(userService.getUser(username).getAddress());
+//        userService.getUser(username).setAddress(adddress);
+        return adddress;
+    }
 }

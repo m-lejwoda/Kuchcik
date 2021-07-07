@@ -18,8 +18,8 @@ public class EmailSenderImpl {
         try {
             MimeMessageHelper helper = new MimeMessageHelper(mail, true);
             helper.setTo(to);
-            helper.setReplyTo("newsletter@codecouple.pl");
-            helper.setFrom("newsletter@codecouple.pl");
+            helper.setReplyTo("newsletter@gmail.com");
+            helper.setFrom("newsletter@gmail.com");
             helper.setSubject(title);
             helper.setText(content, true);
         } catch (MessagingException e) {
