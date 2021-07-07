@@ -10,6 +10,7 @@ import java.util.Collections;
 @SpringBootApplication
 public class KuchcikApplication {
 	public static void main(String[] args) {
+
 		SpringApplication.run(KuchcikApplication.class, args);
 	}
 

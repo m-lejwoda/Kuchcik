@@ -17,7 +17,7 @@ public class RegistrationService {
     private final EmailValidator emailValidator;
     private final UserService userService;
     private final ConfirmationTokenService confirmationTokenService;
-//    private final EmailSender emailSender;
+    private final EmailSender emailSender;
     public String register(RegistrationRequest request) {
         boolean isValidEmail = emailValidator.test(request.getEmail());
         if (!isValidEmail){
@@ -31,7 +31,7 @@ public class RegistrationService {
                 AppUserRole.USER
         ));
         String link = "http://localhost:8080/registration/confirm?token="+ token;
-//        emailSender.send(request.getEmail(),buildEmail(request.getFirstName(),link));
+        emailSender.send(request.getEmail(),buildEmail(request.getFirstName(),link));
         return token;
 
     }

@@ -41,6 +41,9 @@ public class User implements UserDetails {
     private AppUserRole appUserRole;
     private Boolean locked = false;
     private Boolean enabled = false;
+    @OneToOne
+    @JoinColumn(name="address_id")
+    private Address address;
     @OneToMany
     @JoinColumn(name="userId",updatable = false,insertable = false)
     private List<Comment> comment;

@@ -53,5 +53,8 @@ public class UserService implements UserDetailsService {
     public int enableAppUser(String email) {
         return userRepository.enableUser(email);
     }
+    public User getUser(String username){
+        return userRepository.findUserByEmail(username);
+    }
 
 }
