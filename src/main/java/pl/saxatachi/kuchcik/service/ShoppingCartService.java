@@ -13,9 +13,12 @@ public interface ShoppingCartService {
 
     void removeProduct(Product product);
 
+    void removeWholeProduct(Product product);
+
     Map<Product, Integer> getProductsInCart();
 
     void checkout() throws NotEnoughProductsInStockException;
 
     BigDecimal getTotal();
+
 }

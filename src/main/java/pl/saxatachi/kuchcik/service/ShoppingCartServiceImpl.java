@@ -47,6 +47,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
     }
     @Override
+    public void removeWholeProduct(Product product){
+        if(products.containsKey(product)){
+            products.remove(product);
+        }
+    }
+    @Override
     public Map<Product, Integer> getProductsInCart() {
         return Collections.unmodifiableMap(products);
 //        return products;

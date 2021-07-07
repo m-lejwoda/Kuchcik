@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -16,10 +13,7 @@ import pl.saxatachi.kuchcik.controller.dto.ItemCartDTO;
 import pl.saxatachi.kuchcik.email.EmailSenderImpl;
 import pl.saxatachi.kuchcik.exception.NotEnoughProductsInStockException;
 import pl.saxatachi.kuchcik.model.*;
-import pl.saxatachi.kuchcik.service.OrderService;
-import pl.saxatachi.kuchcik.service.ProductService;
-import pl.saxatachi.kuchcik.service.ShoppingCartService;
-import pl.saxatachi.kuchcik.service.UserService;
+import pl.saxatachi.kuchcik.service.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,16 +29,18 @@ public class ShoppingCartController {
     private final ProductService productService;
     private final OrderService orderService;
     private final UserService userService;
+    private final AddressService addressService;
     private final EmailSenderImpl emailSender;
     private final TemplateEngine templateEngine;
     @Autowired
-    public ShoppingCartController(ShoppingCartService shoppingCartService, ProductService productService, OrderService orderService,UserService userService,EmailSenderImpl emailSender,TemplateEngine templateEngine) {
+    public ShoppingCartController(ShoppingCartService shoppingCartService, ProductService productService, OrderService orderService,UserService userService,EmailSenderImpl emailSender,TemplateEngine templateEngine,AddressService addressService) {
         this.shoppingCartService = shoppingCartService;
         this.productService = productService;
         this.orderService = orderService;
         this.userService = userService;
         this.emailSender = emailSender;
         this.templateEngine = templateEngine;
+        this.addressService = addressService;
     }
     @GetMapping("/")
     public String home() {
@@ -81,8 +77,18 @@ public class ShoppingCartController {
         productService.findById(productId).ifPresent(shoppingCartService::addProduct);
         return "Produkt został dodany";
     }
+    @GetMapping("shoppingCart/removeProduct/{productId}")
+        public String removeProductFromCart(@PathVariable("productId") Long productId){
+        productService.findById(productId).ifPresent(shoppingCartService::removeProduct);
+        return "Produkt został usuniety";
+    }
+    @GetMapping("shoppingCart/removeWholeProduct/{productId}")
+    public String removeWholeProductFromCart(@PathVariable("productId") Long productId) {
+        productService.findById(productId).ifPresent(shoppingCartService::removeWholeProduct);
+        return "Produkt został usuniety";
+    }
     @PostMapping("/shoppingCart/addOrder")
-    public Order addCartToOrder(){
+    public Order addCartToOrder(@RequestBody Address address){
         List<OrderItem> itemsincart = new ArrayList<>();
         List<Address> addresses = new ArrayList<>();
         Order order = new Order();
@@ -99,7 +105,15 @@ public class ShoppingCartController {
             orderService.addOrderItem(item);
         }
         order.setTotal(shoppingCartService.getTotal());
-        addresses.add(userService.getUser(username).getAddress());
+        if(userService.getUser(username).getAddress() != null){
+            System.out.println("user service");
+            System.out.println(userService.getUser(username).getAddress() );
+            addresses.add(userService.getUser(username).getAddress());
+        }else{
+            addressService.saveAddress(address);
+            addresses.add(address);
+        }
+//        addresses.add(userService.getUser(username).getAddress());
         order.setUserId(userService.getUser(userService.getUser(username).getEmail()).getId());
         userService.getUser(userService.getUser(username).getEmail());
         order.setAddress(addresses);
@@ -122,8 +136,13 @@ public class ShoppingCartController {
         System.out.println(userService.getUser(username).getAddress());
 
         return userService.getUser(username);
-
-
+    }
+    @PostMapping("/addaddress")
+    public Address addAddresstoUser(Address address){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails)principal).getUsername();
+        userService.getUser(username).setAddress(address);
+        return address;
     }
 //    @GetMapping("/shoppingCart/removeProduct/{productId}")
 //    public ModelAndView removeProductFromCart(@PathVariable("productId") Long productId) throws IOException {
