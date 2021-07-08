@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import pl.saxatachi.kuchcik.controller.dto.ItemCartDTO;
+import pl.saxatachi.kuchcik.controller.dto.ShoppingCartDto;
 import pl.saxatachi.kuchcik.email.EmailSenderImpl;
 import pl.saxatachi.kuchcik.exception.NotEnoughProductsInStockException;
 import pl.saxatachi.kuchcik.model.*;
@@ -47,12 +48,9 @@ public class ShoppingCartController {
         return "Hello Kuchcik2!";
     }
     @GetMapping("/shoppingCart")
-    public List<ItemCartDTO> shoppingCart() throws IOException {
-
-//        ModelAndView modelAndView = new ModelAndView("/shoppingCart");
-//        modelAndView.addObject("products", shoppingCartService.getProductsInCart());
-//        modelAndView.addObject("total", shoppingCartService.getTotal().toString());
+    public ShoppingCartDto shoppingCart() throws IOException {
         List<ItemCartDTO> itemsincart = new ArrayList<>();
+        ShoppingCartDto cartdto = new ShoppingCartDto();
         for(Map.Entry<Product, Integer> entry : shoppingCartService.getProductsInCart().entrySet()){
             ItemCartDTO item = new ItemCartDTO();
             item.setName(entry.getKey().getName());
@@ -60,7 +58,9 @@ public class ShoppingCartController {
             item.setQuantity(entry.getValue());
             itemsincart.add(item);
         }
-        return itemsincart;
+        cartdto.setItem(itemsincart);
+        cartdto.setTotal(shoppingCartService.getTotal());
+        return cartdto;
     }
 
     @GetMapping("/allorders")
@@ -89,6 +89,7 @@ public class ShoppingCartController {
         Order order = new Order();
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails)principal).getUsername();
+        address.setUserId(userService.getUser(username).getId());
         orderService.addOrder(order);
         for(Map.Entry<Product, Integer> entry : shoppingCartService.getProductsInCart().entrySet()){
             OrderItem item = new OrderItem();
@@ -100,13 +101,15 @@ public class ShoppingCartController {
             orderService.addOrderItem(item);
         }
         order.setTotal(shoppingCartService.getTotal());
-        if(userService.getUser(username).getAddress() != null){
+        System.out.println("sprawdzenie adresu");
+        System.out.println(userService.getUser(username).getAddress());
+        if(userService.getUser(username).getAddress().isEmpty()){
+            addressService.saveAddress(address);
+            addresses.add(address);
+        }else{
             System.out.println("user service");
             System.out.println(userService.getUser(username).getAddress() );
             addresses.add(userService.getUser(username).getAddress().get(0));
-        }else{
-            addressService.saveAddress(address);
-            addresses.add(address);
         }
 //        addresses.add(userService.getUser(username).getAddress());
         order.setUserId(userService.getUser(userService.getUser(username).getEmail()).getId());
@@ -139,9 +142,6 @@ public class ShoppingCartController {
         address.setUserId(userService.getUser(username).getId());
         addressService.saveAddress(address);
         List <Address> adddress = userService.getUser(username).getAddress();
-        System.out.println(userService.getUser(username));
-        System.out.println(userService.getUser(username).getUsername());
-        System.out.println(adddress);
         adddress.add(address);
         userService.getUser(username).setAddress(adddress);
 
